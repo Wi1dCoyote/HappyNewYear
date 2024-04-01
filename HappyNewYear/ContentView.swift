@@ -15,10 +15,18 @@ class SnowScene: SKScene {
     }
 }
 
+class BengalScene: SKScene {
+    
+    override func didMove(to view: SKView) {
+        self.anchorPoint = CGPoint(x: 0.55, y: 0.55)
+    }
+}
+
 struct ContentView: View {
     
     @State private var isSpinning = false
     @State private var starPulsating = false
+    @State private var bengalLocation = CGPoint(x: 50, y: 50)
     private let garlandColor = Color(#colorLiteral(red: 0.9372549057, green: 0.3490196168, blue: 0.1921568662, alpha: 1))
     
     var snowScene: SKScene {
@@ -28,6 +36,22 @@ struct ContentView: View {
         scene.scaleMode = .resizeFill
         scene.backgroundColor = .clear
         return scene
+    }
+    
+    var bengalScene: SKScene {
+        let scene = BengalScene()
+        let particle = SKEmitterNode(fileNamed: "BengalParticle")!
+        scene.addChild(particle)
+        scene.scaleMode = .resizeFill
+        scene.backgroundColor = .clear
+        return scene
+    }
+    
+    var simpleDrag: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                self.bengalLocation = value.location
+            }
     }
     
     var body: some View {
@@ -43,8 +67,17 @@ struct ContentView: View {
                 .ignoresSafeArea()
                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             
+            Image("Bengal")
+                .resizable()
+                .frame(width: 200, height: 200)
+                .zIndex(3)
+                .position(bengalLocation)
             
-            
+            SpriteView(scene: bengalScene, options: [.allowsTransparency])
+                .ignoresSafeArea()
+                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+                .zIndex(4)
+                .position(bengalLocation)
             
             VStack {
                 
@@ -180,7 +213,7 @@ struct ContentView: View {
                 
             }
             .padding()
-        }
+        }.gesture(simpleDrag)
     }
 }
 
